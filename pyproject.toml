@@ -1,0 +1,21 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "gpx-display"
+version = "0.1.0"
+description = "A commandline tool for producing plots from GPX data"
+readme = "README.md"
+requires-python = ">=3.7"
+authors = [
+    { name = "Zak Lawrence", email = "zlawrence97@outlook.com" }
+]
+dependencies = []
+
+[project.scripts]
+gpx-display = "gpx_display.__main__:main"
+
+[tool.setuptools]
+packages = ["gpx_display"]
+
