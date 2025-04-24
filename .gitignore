@@ -1,3 +1,4 @@
+cache/*
 *.gpx
 
 # Byte-compiled / optimized / DLL files
