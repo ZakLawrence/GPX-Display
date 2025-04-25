@@ -31,6 +31,7 @@ def main():
     if args.test is not None:
         print(args.test)
 
+    route_name = args.input_file.split("/")[-1].replace(".gpx","").replace("_"," ")
     gpx = load_input_file(args.input_file)
     points = parse_gpx_data(gpx)
     timezone = get_timezone(points[0])
@@ -38,7 +39,7 @@ def main():
     points = calculate_pace_info(points)
 
     points = clip_route(points,args.start_time,args.start_distance,args.end_time,args.end_distance) 
-    make_map(points)
+    make_map(points,route_name)
     
 
 

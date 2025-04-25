@@ -4,9 +4,12 @@ import matplotlib.pyplot as plt
 from .data_tools import *
 
 
+
 def make_map(route,
+             route_name = None,
              padding = 0.001
              ):
+    
     coords = get_lat_long(route)
 
     lats, lons = zip(*coords)
@@ -22,8 +25,10 @@ def make_map(route,
 
     G = ox.graph_from_bbox(box, network_type="drive",retain_all=True,simplify=False)
     W = ox.graph_from_bbox(box, network_type="walk",retain_all=True,simplify=False)
-    buildings = ox.features_from_bbox(box, tags={"building": True})
-    
+    try:
+        buildings = ox.features_from_bbox(box, tags={"building": True})
+    except InsufficientResponseError:
+        buildings = None
     
     # === 4. Get landcover features ===
     green_tags = {
@@ -31,13 +36,19 @@ def make_map(route,
         "landuse": ["grass", "recreation_ground"],
         "natural": ["wood"]
     }
-    greenspace = ox.features_from_bbox(box, tags=green_tags)
-    
+    try:
+        greenspace = ox.features_from_bbox(box, tags=green_tags)
+    except InsufficientResponseError:
+        greenspace = None 
+
     water_tags = {
         "natural": "water"
     }
-    water = ox.features_from_bbox(box, tags=water_tags)
-    
+    try:
+        water = ox.features_from_bbox(box, tags=water_tags)
+    except InsufficientResponseError:
+        water = None 
+
     sports_tags = {
         "leisure": ["track"]
     }
@@ -50,15 +61,15 @@ def make_map(route,
     fig, ax = plt.subplots(figsize=(10, 10))
     
     # Greenspace (parks, grass, etc.)
-    if not greenspace.empty:
+    if greenspace is not None and not greenspace.empty:
         greenspace.plot(ax=ax, facecolor="lightgreen", edgecolor="none", alpha=0.4)
     
     # Water
-    if not water.empty:
+    if water is not None and not water.empty:
         water.plot(ax=ax, facecolor="lightblue", edgecolor="none", alpha=0.5)
     
     # Buildings
-    if not buildings.empty:
+    if buildings is not None and not buildings.empty:
         buildings.plot(ax=ax, facecolor="lightgray", edgecolor="gray", linewidth=0.5, alpha=0.8)
     
     if sportsspace is not None and not sportsspace.empty:
@@ -72,6 +83,14 @@ def make_map(route,
     lat, lon = zip(*coords)
     ax.plot(lon, lat, color="#fc4c02", linewidth=2, label="GPX Track")
     
+    if route_name is not None:
+        label_x = west + (east - west)/4
+        label_y = north - padding/2
+        ax.text(label_x, label_y, route_name,
+            fontsize=30,
+            color="#fc4c02",
+            fontname="Verdana",
+            bbox=dict(facecolor='white', alpha=0.8, edgecolor='none'))
     plt.tight_layout()
-    plt.savefig("route_landcover.png", dpi=300)
-    plt.show()
+    plt.savefig(f"{route_name.replace(" ","_")}.png", dpi=300)
+    #plt.show()
