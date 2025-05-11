@@ -23,8 +23,15 @@ def make_map(route,
     west -= padding
     box = (west,south,east,north)
 
-    G = ox.graph_from_bbox(box, network_type="drive",retain_all=True,simplify=False)
-    W = ox.graph_from_bbox(box, network_type="walk",retain_all=True,simplify=False)
+    try:
+        G = ox.graph_from_bbox(box, network_type="drive",retain_all=True,simplify=False)
+    except:
+        G = None
+    try:
+        W = ox.graph_from_bbox(box, network_type="walk",retain_all=True,simplify=False)
+    except:
+        W = None
+    
     try:
         buildings = ox.features_from_bbox(box, tags={"building": True})
     except InsufficientResponseError:
@@ -76,8 +83,10 @@ def make_map(route,
         sportsspace.plot(ax=ax, facecolor="pink", edgecolor="none", alpha=0.8)
     
     # Streets
-    ox.plot_graph(G, ax=ax, node_size=0, edge_color="black", edge_linewidth=1.5, show=False, close=False)
-    ox.plot_graph(W, ax=ax, node_size=0, edge_color="black", edge_linewidth=0.5, show=False, close=False)
+    if G is not None:
+        ox.plot_graph(G, ax=ax, node_size=0, edge_color="black", edge_linewidth=1.5, show=False, close=False)
+    if W is not None:
+        ox.plot_graph(W, ax=ax, node_size=0, edge_color="black", edge_linewidth=0.5, show=False, close=False)
     
     # GPX route
     lat, lon = zip(*coords)
