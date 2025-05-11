@@ -1,4 +1,6 @@
+Data/*
 cache/*
+plots/*
 *.gpx
 
 # Byte-compiled / optimized / DLL files
